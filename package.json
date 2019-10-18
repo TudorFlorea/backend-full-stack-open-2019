@@ -1,0 +1,22 @@
+{
+  "name": "backend-full-stack-open-2019",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js"
+  },
+  "author": "Tudor Florea",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TudorFlorea/backend-full-stack-open-2019/issues"
+  },
+  "homepage": "https://github.com/TudorFlorea/backend-full-stack-open-2019#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
