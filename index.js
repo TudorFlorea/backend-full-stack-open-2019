@@ -116,5 +116,5 @@ app.get("/info", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App runing on port ${port}`);
+  console.log(`App runing on port ${PORT}`);
 });
