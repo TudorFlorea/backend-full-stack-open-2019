@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 
-const port = 3001;
+const port = process.env.port || 3001;
 let persons = [
   {
     name: "Arto Hellas",
