@@ -51,6 +51,28 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
   console.log(req.body);
+  if (!req.body.name) {
+    res.status(400).json({
+      error: "The request body is missing the 'name' property"
+    });
+  }
+
+  if (!req.body.number) {
+    res.status(400).json({
+      error: "The request body is missing the 'number' property"
+    });
+  }
+
+  const existingPerson = persons.filter(
+    person => person.name.toLowerCase() === req.body.name.toLowerCase()
+  );
+
+  if (existingPerson.length > 0) {
+    res.status(400).json({
+      error: "name must be unique"
+    });
+  }
+
   const person = {
     name: req.body.name,
     number: req.body.number,
