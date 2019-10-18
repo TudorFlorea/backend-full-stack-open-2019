@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 
-const port = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 let persons = [
   {
     name: "Arto Hellas",
@@ -115,6 +115,6 @@ app.get("/info", (req, res) => {
     `);
 });
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log(`App runing on port ${port}`);
 });
