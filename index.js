@@ -3,7 +3,9 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const db = require("./db");
 
+db.connect();
 const Person = require("./models/person");
 
 const PORT = process.env.PORT || 3001;
@@ -81,37 +83,39 @@ app.post("/api/persons", (req, res) => {
     return;
   }
 
-  const existingPerson = persons.filter(
-    person => person.name.toLowerCase() === req.body.name.toLowerCase()
-  );
-
-  if (existingPerson.length > 0) {
-    res.status(400).json({
-      error: "name must be unique"
-    });
-    return;
-  }
-
-  const person = {
+  const person = new Person({
     name: req.body.name,
-    number: req.body.number,
-    id: generateId()
-  };
-  persons.push(person);
-  res.json(person);
+    number: req.body.number
+  });
+
+  person.save().then(personDoc => {
+    res.json(personDoc.toJSON());
+  });
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.filter(person => person.id === id);
-  if (person.length < 1) {
-    res.status(404).json({
-      error: `Person with the id ${id} doesn't exist in the database`
+  const id = req.params.id;
+  Person.findByIdAndRemove(id)
+    .then(personDoc => {
+      if (personDoc) {
+        res.json(personDoc.toJSON());
+      } else {
+        res.status(204).end();
+      }
+    })
+    .catch(err => {
+      console.log("error while deleting person", err);
+      res.json({ error: "an error occured" });
     });
-  } else {
-    persons = persons.filter(person => person.id !== id);
-    res.json([person[0]]);
-  }
+  // const person = persons.filter(person => person.id === id);
+  // if (person.length < 1) {
+  //   res.status(404).json({
+  //     error: `Person with the id ${id} doesn't exist in the database`
+  //   });
+  // } else {
+  //   persons = persons.filter(person => person.id !== id);
+  //   res.json([person[0]]);
+  // }
 });
 
 app.get("/info", (req, res) => {
