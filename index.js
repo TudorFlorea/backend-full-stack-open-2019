@@ -83,6 +83,38 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
+app.put("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id;
+
+  const person = {
+    name: req.body.name,
+    number: req.body.number
+  };
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then(doc => {
+      if (doc) {
+        res.json(doc.toJSON());
+      } else {
+        res.status(204).end();
+      }
+    })
+    .catch(err => next(err));
+});
+
+app.delete("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id;
+  Person.findByIdAndRemove(id)
+    .then(personDoc => {
+      if (personDoc) {
+        res.json(personDoc.toJSON());
+      } else {
+        res.status(204).end();
+      }
+    })
+    .catch(err => next(err));
+});
+
 app.post("/api/persons", (req, res, next) => {
   if (!req.body.name) {
     res.status(400).json({
@@ -106,19 +138,6 @@ app.post("/api/persons", (req, res, next) => {
     .save()
     .then(personDoc => {
       res.json(personDoc.toJSON());
-    })
-    .catch(err => next(err));
-});
-
-app.delete("/api/persons/:id", (req, res, next) => {
-  const id = req.params.id;
-  Person.findByIdAndRemove(id)
-    .then(personDoc => {
-      if (personDoc) {
-        res.json(personDoc.toJSON());
-      } else {
-        res.status(204).end();
-      }
     })
     .catch(err => next(err));
 });
