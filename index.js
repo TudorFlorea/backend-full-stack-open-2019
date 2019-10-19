@@ -1,7 +1,10 @@
+require("dotenv").config({ path: __dirname + "/.env" });
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+
+const Person = require("./models/person");
 
 const PORT = process.env.PORT || 3001;
 let persons = [
@@ -45,7 +48,10 @@ app.use(
 );
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons);
+  // res.json(persons);
+  Person.find({}).then(docs => {
+    res.json(docs);
+  });
 });
 
 app.get("/api/persons/:id", (req, res) => {
