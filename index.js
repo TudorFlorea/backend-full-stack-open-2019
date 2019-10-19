@@ -32,7 +32,6 @@ const generateId = () => {
 };
 
 morgan.token("content", req => {
-  console.log(req.body);
   if (!req.body) return "";
   return JSON.stringify(req.body);
 });
