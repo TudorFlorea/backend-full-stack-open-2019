@@ -36,6 +36,20 @@ const generateId = () => {
   return Math.floor(Math.random() * 10000);
 };
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError" && error.kind === "ObjectJd") {
+    return res.status(400).send({ error: "Malformatted id" });
+  }
+
+  next(error);
+};
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
+};
+
 morgan.token("content", req => {
   if (!req.body) return "";
   return JSON.stringify(req.body);
@@ -69,7 +83,7 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   if (!req.body.name) {
     res.status(400).json({
       error: "The request body is missing the 'name' property"
@@ -88,12 +102,15 @@ app.post("/api/persons", (req, res) => {
     number: req.body.number
   });
 
-  person.save().then(personDoc => {
-    res.json(personDoc.toJSON());
-  });
+  person
+    .save()
+    .then(personDoc => {
+      res.json(personDoc.toJSON());
+    })
+    .catch(err => next(err));
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   Person.findByIdAndRemove(id)
     .then(personDoc => {
@@ -103,19 +120,7 @@ app.delete("/api/persons/:id", (req, res) => {
         res.status(204).end();
       }
     })
-    .catch(err => {
-      console.log("error while deleting person", err);
-      res.json({ error: "an error occured" });
-    });
-  // const person = persons.filter(person => person.id === id);
-  // if (person.length < 1) {
-  //   res.status(404).json({
-  //     error: `Person with the id ${id} doesn't exist in the database`
-  //   });
-  // } else {
-  //   persons = persons.filter(person => person.id !== id);
-  //   res.json([person[0]]);
-  // }
+    .catch(err => next(err));
 });
 
 app.get("/info", (req, res) => {
@@ -124,6 +129,10 @@ app.get("/info", (req, res) => {
         <p>${new Date()}</p>
     `);
 });
+
+app.use(unknownEndpoint);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App runing on port ${PORT}`);
