@@ -17,7 +17,6 @@ const personSchema = new mongoose.Schema({
 });
 
 const Person = mongoose.model("Person", personSchema);
-console.log("gete");
 
 if (process.argv.length === 3) {
   Person.find({}).then(persons => {
@@ -33,7 +32,7 @@ if (process.argv.length === 3) {
     name,
     number
   });
-  person.save(doc => {
+  person.save(() => {
     console.log("person saved");
     mongoose.connection.close();
   });
