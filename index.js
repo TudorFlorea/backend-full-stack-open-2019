@@ -11,10 +11,6 @@ const Person = require("./models/person");
 const PORT = process.env.PORT || 3001;
 
 const errorHandler = (error, req, res, next) => {
-  console.log(error.name, error.kind);
-  console.error(error.message);
-  console.log(error);
-
   if (error.name === "CastError" && error.kind === "ObjectJd") {
     return res.status(400).send({ error: "Malformatted id" });
   }
@@ -96,19 +92,6 @@ app.delete("/api/persons/:id", (req, res, next) => {
 });
 
 app.post("/api/persons", (req, res, next) => {
-  // if (!req.body.name) {
-  //   res.status(400).json({
-  //     error: "The request body is missing the 'name' property"
-  //   });
-  //   return;
-  // }
-  // if (!req.body.number) {
-  //   res.status(400).json({
-  //     error: "The request body is missing the 'number' property"
-  //   });
-  //   return;
-  // }
-
   const person = new Person({
     name: req.body.name,
     number: req.body.number
